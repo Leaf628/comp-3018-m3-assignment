@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import morgan from "morgan";
-import router from "../src/api/v1/routes/postRoutes"
+import router from "../api/v1/routes/eventRoute"
 
 const app: Express = express();
 
