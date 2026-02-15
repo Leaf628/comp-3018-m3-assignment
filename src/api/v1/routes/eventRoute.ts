@@ -1,10 +1,10 @@
 import express from "express";
 import { validateRequest } from "../middleware/validate";
-import * as postController from "../controllers/postController";
-import { postSchemas } from "../validation/postSchemas";
+import * as eventController from "../controllers/eventController";
+import { eventSchemas } from "../validation/eventSchemas";
 
 const router = express.Router();
 
-router.post("/", validateRequest(postSchemas.create), postController.createPostHandler);
+router.post("/", validateRequest(eventSchemas.create), eventController.createEventHandler);
 
 export default router;
