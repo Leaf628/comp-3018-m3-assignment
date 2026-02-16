@@ -1,3 +1,4 @@
+import { date } from "joi";
 import { Event } from "../models/eventModel";
 import * as firestoreRepository from "../repositories/firestoreRepository";
 // import { eventSchemas } from "../validation/eventSchemas";
@@ -16,20 +17,19 @@ const validateEventRules = (eventData: Partial<Event>): void => {
 
         if (trimmedName.length === 0) {
             errors.push("Validation error: \"name\" is required.");
-        } 
-        if (trimmedName.length < 3) {
+        } else if (trimmedName.length < 3) {
             errors.push("Validation error: \"name\" length must be at least 3 chatacters long.");
         } 
     };
 
     // Validate event capacity
     if (eventData.capacity !== undefined) {
-        if(eventData.capacity < 5 ){
-            errors.push("Validation error: \"capacity\" must be greater than or equal to 5.");
-        }
+        
         if (!Number.isInteger(eventData.capacity)){
             errors.push("Validation error: \"capacity\" must be an integer")
-        }       
+        } else if(eventData.capacity < 5 ){
+            errors.push("Validation error: \"capacity\" must be greater than or equal to 5.");
+        }     
     };
 
     // Validate Enum of Status and Category
@@ -59,30 +59,53 @@ const validateEventRules = (eventData: Partial<Event>): void => {
 
     // Validate of event date
     if (eventData.date){
-        if(new Date(eventData.date) < new Date) {
-            errors.push("Validation error: \"date\" must be greater than \"now\"")
-        }
+       const eventDate = new Date(eventData.date);
+       const now = new Date();
+
+       if (isNaN(eventDate.getTime())) {
+        errors.push("Validation error: date must be a valide date format");
+       } else if (eventDate.getTime() <= now.getTime()) {
+        errors.push("Validation error: \"date\" must be greater than \"now\"");
+       }
     };
 
     // Display error message
     if (errors.length > 0) {
-        throw new Error(errors[0])
+        throw new Error(errors.join(","))
     }
 };
 
 // creating a new event
-export const createEvent = async (eventData: {name: string; date: Date; capacity: number}): Promise<Event> => {
-    try {
+export const createEvent = async (eventData: {
+    id?: string;
+    name: string; 
+    date: Date | string; 
+    capacity: number;
+    registrationCount?: number;
+    status?: string;
+    category?: string; 
+}): Promise<Event> => {
+    try {     
+        // Use ID inputted
+        const eventID = eventData.id || `evt_${Math.random().toString(36).slice(2, 11)}`;
+        
+        // Get data of new event
         const newEventData = {
-            id: "evt_000001",
-            ... eventData,
-            registrationCount: 0,
-            status: "active",
-            category: "general",
+            id: eventID,
+            name: eventData.name,
+            date: new Date(eventData.date),
+            capacity: eventData.capacity,
+            registrationCount: eventData.registrationCount || 0,
+            status: eventData.status || "active",
+            category: eventData.category || "general",
             createdAt: new Date(),
             updatedAt: new Date(),
         };
 
+        // Validate all rules of creating an event
+        validateEventRules(newEventData);
+
+        // Create the document of firebase
         await firestoreRepository.createDocument<Event>(COLLECTION, newEventData);
 
         return newEventData;
@@ -95,3 +118,6 @@ export const createEvent = async (eventData: {name: string; date: Date; capacity
         );
     }
 };
+
+// retrieving all events
+

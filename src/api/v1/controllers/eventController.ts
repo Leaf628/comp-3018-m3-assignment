@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as eventService from "../services/eventService";
 import { successResponse } from "../models/responseModel";
 import { HTTP_STATUS } from "../../../constants/httpConstants";
-import { Event } from "../models/eventModel";
+
 
 // Handles creating new event
 export const createEventHandler = async (
