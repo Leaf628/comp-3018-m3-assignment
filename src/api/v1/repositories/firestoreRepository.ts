@@ -1,6 +1,7 @@
 import { string } from "joi";
 import { db } from "../../../../config/firebaseConfig";
 import { FirestoreDataTypes } from "../types/firestore";
+import { promises } from "dns";
 
 interface FieldValuePair {
     fieldName: string;
@@ -52,6 +53,35 @@ export const getAllDocuments = async <T>(
             error instanceof Error ? error.message : "Unknown error";
         throw new Error(
             `Failed to retrieve all documents in ${collectionName}: ${errorMessage}`
+        );
+    }
+};
+
+// to find a document by Id
+export const getDocById = async <T>(
+    collectionName: string,
+    id: string,
+): Promise<T | null> => {
+    try{
+        let docRef: FirebaseFirestore.DocumentReference;
+
+        docRef = await db.collection(collectionName).doc(id);
+    
+        const snapshot = await docRef.get();
+
+        if(!snapshot){
+            return null;
+        }
+
+        return {
+            id: snapshot.id,
+            ... (snapshot.data() as T),
+        }
+    }catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error";
+        throw new Error(
+            `Failed to find the document in ${collectionName}: ${errorMessage}`
         );
     }
 };

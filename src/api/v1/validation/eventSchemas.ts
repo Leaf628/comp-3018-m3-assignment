@@ -26,6 +26,21 @@ export const eventSchemas = {
             
         }),
     },
-}
 
-// GET  /events//: id - Get single event
+
+    // GET  /events//: id - Get single event
+    getById: {
+        params: Joi.object({
+            id: Joi.string().required().messages({
+                "any.required": "Event ID is required ",
+                "string.empty": "Event ID cannot be empty",
+            }),
+        }),
+        query: Joi.object({
+            include: Joi.string().valid("name", "status").optional(),
+        }),
+    },
+
+    
+
+}
