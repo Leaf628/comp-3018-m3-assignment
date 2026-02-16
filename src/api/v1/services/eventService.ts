@@ -135,4 +135,21 @@ export const getAllEvents = async (): Promise<Event[]> => {
 };
 
 // Retrives an event by ID
+export const getEventById = async (id: string): Promise<Event> => {
+    try {
+        const event = await firestoreRepository.getDocById<Event>(COLLECTION, id);
+    
+        if(!event){
+            throw new Error("Event not found");
+        }
 
+        return event;
+
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : " Unknown error";
+        throw new Error(
+                `Failed to retrive the event: ${errorMessage}` 
+        );
+    }
+};

@@ -36,3 +36,19 @@ export const getAllEventsHandler = async (
         next(error);
     }
 };
+
+// Handles request to get a single event
+export const getEventByIdHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const event = await eventService.getEventById(id as string);
+
+        res.status(HTTP_STATUS.OK).json(successResponse({event}, "Post retrieved successfully"));     
+    } catch (error: unknown) {
+        next(error);
+    }
+};

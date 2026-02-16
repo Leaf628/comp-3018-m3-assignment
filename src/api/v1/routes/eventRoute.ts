@@ -7,5 +7,8 @@ const router = express.Router();
 
 router.post("/", validateRequest(eventSchemas.create), eventController.createEventHandler);
 router.get("/", eventController.getAllEventsHandler);
+router.get("/:id", validateRequest(eventSchemas.getById), eventController.getEventByIdHandler);
+
+
 
 export default router;
