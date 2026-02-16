@@ -2,6 +2,7 @@ import { string } from "joi";
 import { db } from "../../../../config/firebaseConfig";
 import { FirestoreDataTypes } from "../types/firestore";
 import { promises } from "dns";
+import { database } from "firebase-admin";
 
 interface FieldValuePair {
     fieldName: string;
@@ -85,3 +86,22 @@ export const getDocById = async <T>(
         );
     }
 };
+
+// update an existing document
+export const updateDocument = async <T>(
+    collectionName: string,
+    id: string,
+    data: Partial<T>
+): Promise<void> => {
+    try {
+        await db.collection(collectionName).doc(id).update(data);   
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error"
+        throw new Error(
+            `Failed to update document in ${collectionName}: ${errorMessage}`
+        );
+    }
+};
+
+// deleting an existing document
