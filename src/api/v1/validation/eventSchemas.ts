@@ -27,3 +27,5 @@ export const eventSchemas = {
         }),
     },
 }
+
+// GET  /events//: id - Get single event

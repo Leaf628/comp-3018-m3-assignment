@@ -120,4 +120,19 @@ export const createEvent = async (eventData: {
 };
 
 // retrieving all events
+export const getAllEvents = async (): Promise<Event[]> => {
+    try {
+        const events = await firestoreRepository.getAllDocuments<Event>(COLLECTION);
+        return events;
+
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error";
+        throw new Error(
+                `Failed to retrive all events: ${errorMessage}`
+        );
+    }
+};
+
+// Retrives an event by ID
 

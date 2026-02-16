@@ -21,3 +21,18 @@ export const createEventHandler = async (
         next(error);
     }
 };
+
+// Handles request to get all events
+export const getAllEventsHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const events = await eventService.getAllEvents();
+
+        res.status(HTTP_STATUS.OK).json(successResponse({events}, "Events retrieved successfully"));
+    } catch (error: unknown) {
+        next(error);
+    }
+};

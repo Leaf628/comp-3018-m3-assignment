@@ -42,10 +42,11 @@ export const getAllDocuments = async <T>(
         const snapshot = await db.collection(collectionName).get();
 
         return snapshot.docs.map(doc =>({
-            docId: doc.id,
+            id: doc.id,
             ... (doc.data() as T),    
             }
         ));
+
     }catch (error:unknown) {
         const errorMessage = 
             error instanceof Error ? error.message : "Unknown error";
