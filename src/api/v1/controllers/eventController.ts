@@ -52,3 +52,25 @@ export const getEventByIdHandler = async (
         next(error);
     }
 };
+
+// Handles request to update an existing event
+export const updateEventHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const {id} = req.params;
+        const {name, date, capacity} = req.body;
+
+        const updatedEventData = {name, date, capacity};
+
+        const updatedEvent = await eventService.updateEvent(id as string, updatedEventData);
+
+        res.status(HTTP_STATUS.OK).json(successResponse({updatedEvent}, "Event updated" ));
+    } catch (error: unknown) {
+        next(error);
+    }
+};
+
+// Handles request to delete an existing event

@@ -153,3 +153,54 @@ export const getEventById = async (id: string): Promise<Event> => {
         );
     }
 };
+
+// Updating an event
+export const updateEvent = async (id: string, eventData: {name: string, date: Date, capacity: number}): Promise<Event> => {
+    try {
+        const updatedEvent: Partial<Event> = {};
+
+        if (eventData.name !== undefined) {
+            updatedEvent.name = eventData.name; 
+        }
+
+        if (eventData.date !== undefined) {
+            updatedEvent.date = eventData.date;
+        }
+
+        if (eventData.capacity !== undefined) {
+            updatedEvent.capacity = eventData.capacity;
+        }
+
+        if (Object.keys(updatedEvent).length === 0) {
+            throw new Error("No fields provided to update");
+        }
+
+        updatedEvent.updatedAt = new Date();
+
+        // update the document
+        await firestoreRepository.updateDocument<Event>(
+            COLLECTION,
+            id,
+            updatedEvent
+        );
+
+        // retrieve the updated event document
+        const updatedEventData = await firestoreRepository.getDocById<Event>(COLLECTION, id);
+
+        if(!updatedEventData){
+            throw new Error("Updated event could not be found");
+        }
+
+        return updatedEventData;
+
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error";
+        throw new Error(
+            `Failed to update event ${id}: ${errorMessage} `
+        );
+    }
+};
+
+// deleting an event by ID
+

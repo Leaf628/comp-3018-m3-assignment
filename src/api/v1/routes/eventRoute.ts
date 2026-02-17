@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/", validateRequest(eventSchemas.create), eventController.createEventHandler);
 router.get("/", eventController.getAllEventsHandler);
 router.get("/:id", validateRequest(eventSchemas.getById), eventController.getEventByIdHandler);
+router.put("/:id", validateRequest(eventSchemas.update), eventController.updateEventHandler);
 
 
 
