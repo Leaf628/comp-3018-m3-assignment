@@ -75,5 +75,12 @@ export const eventSchemas = {
     },
 
     //  DELETE /events/:id - Delete event
-
-}
+    delete: {
+        params: Joi.object({
+            id: Joi.string().required().messages({
+                "any.required": "Event ID is required",
+                "string.empty": "Event ID cannot be empty",
+            }),
+        }),
+    },
+};

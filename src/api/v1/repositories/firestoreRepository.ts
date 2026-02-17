@@ -105,3 +105,17 @@ export const updateDocument = async <T>(
 };
 
 // deleting an existing document
+export const deleteDocument = async <T>(
+    collectionName: string,
+    id: string,
+): Promise<void> => {
+    try {
+        await db.collection(collectionName).doc(id).delete();
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error";
+        throw new Error(
+            `Failed to delete document in ${collectionName}: ${errorMessage}`
+        );
+    }
+};

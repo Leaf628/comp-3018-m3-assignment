@@ -203,4 +203,15 @@ export const updateEvent = async (id: string, eventData: {name: string, date: Da
 };
 
 // deleting an event by ID
-
+export const deleteEvent = async (id: string): Promise<void> => {
+    try {
+        await firestoreRepository.deleteDocument(COLLECTION, id);
+        
+    } catch (error: unknown) {
+        const errorMessage = 
+            error instanceof Error ? error.message : "Unknown error";
+        throw new Error(
+            `Failed to delete the event: ${errorMessage}`
+        );
+    }
+};

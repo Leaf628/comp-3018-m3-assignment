@@ -9,7 +9,6 @@ router.post("/", validateRequest(eventSchemas.create), eventController.createEve
 router.get("/", eventController.getAllEventsHandler);
 router.get("/:id", validateRequest(eventSchemas.getById), eventController.getEventByIdHandler);
 router.put("/:id", validateRequest(eventSchemas.update), eventController.updateEventHandler);
-
-
+router.delete("/:id", validateRequest(eventSchemas.delete), eventController.deleteEventHandler);
 
 export default router;
