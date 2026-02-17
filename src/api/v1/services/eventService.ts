@@ -129,7 +129,7 @@ export const getAllEvents = async (): Promise<Event[]> => {
         const errorMessage = 
             error instanceof Error ? error.message : "Unknown error";
         throw new Error(
-                `Failed to retrive all events: ${errorMessage}`
+                `Failed to retrieve all events: ${errorMessage}`
         );
     }
 };
