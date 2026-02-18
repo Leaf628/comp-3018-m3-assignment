@@ -115,4 +115,35 @@ describe("Event Services", () => {
         });
     });
 
+    // test case # 4 - update an event
+    describe("updateEvent", () => {
+        it("should update event successfully", async () => {
+            // Arrange
+            const existingEvent = {
+                id: " evt_001",
+                name: "old-name",
+                date: new Date("2026-06-01"),
+                capacity: 100,
+                status: "active"
+            };
+        
+        (firestoreRepository.getDocById as jest.Mock).mockResolvedValue(existingEvent);
+
+        (firestoreRepository.updateDocument as jest.Mock).mockResolvedValue({});
+
+        const result = await eventService.updateEvent(
+            "evt_001", 
+            {name: "new-name", date: new Date("2026-06-01"), capacity: 100}
+            );
+            expect(firestoreRepository.updateDocument).toHaveBeenCalledWith(
+                "events", 
+                "evt_001",
+            expect.objectContaining({
+                name: "new-name", 
+                updatedAt: expect.any(Date)
+                })
+            );
+        });
+    });
+
 });
