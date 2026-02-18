@@ -146,4 +146,17 @@ describe("Event Services", () => {
         });
     });
 
+    // test case 5 - delete an event
+    describe("deleteEvent", () => {
+        it("should delete event successfully", async () => {
+            
+            (firestoreRepository.getDocById as jest.Mock).mockResolvedValue({ id: "evt_001"});
+
+            (firestoreRepository.deleteDocument as jest. Mock).mockResolvedValue({});
+
+            await eventService.deleteEvent("evt_001");
+
+            expect(firestoreRepository.deleteDocument).toHaveBeenCalledWith("events","evt_001");
+        });
+    });
 });
