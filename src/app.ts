@@ -1,6 +1,8 @@
 import express, { Express } from "express";
 import morgan from "morgan";
 import router from "./api/v1/routes/eventRoute";
+import { errorHandler } from "./api/v1/middleware/errorHandler";
+
 
 const app: Express = express();
 
@@ -26,6 +28,9 @@ app.get("/api/v1/health", (req, res) => {
 
 // api ednpoint for all routes
 app.use("/api/v1/events", router);
+
+// api endpoint for error handler
+app.use(errorHandler);
 
 
 export default app;

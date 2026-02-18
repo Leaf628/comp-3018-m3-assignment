@@ -58,4 +58,45 @@ describe("Event Services", () => {
             );
         });
     });
+
+
+    // test case # 2
+    describe("Event Service - GetAllEvents", () => {
+
+        it("should retrieve the list of events successfully", async () => {
+            // Arrange
+            const mockEvents = [
+                {id: "evt_test_1", name: "Event_test_1", date: "2026-06-01", capacity: 100},
+                {id: "evt_test_2", name: "Event_test_2", date: "2026-06-02", capacity: 100}
+            ];
+
+            (firestoreRepository.getAllDocuments as jest.Mock).mockResolvedValue(mockEvents);
+
+            // Act
+            const result = await eventService.getAllEvents();
+
+            // expected results should be an array matching with the mockRepositsoryResponse
+            expect(firestoreRepository.getAllDocuments).toHaveBeenCalledWith("events");
+            expect(result).toEqual({
+                count: 2,
+                events:mockEvents});
+            });
+        });
+
+        it("should return empty array with count 0 when no events", async () => {
+            // Arrange
+            (firestoreRepository.getAllDocuments as jest.Mock).mockResolvedValue([]);
+
+            // Act
+            const result = await eventService.getAllEvents();
+
+            // Assert
+            expect(result).toEqual({
+                count: 0, 
+                events: []
+            });
+        });
+
+    // test case # 3
+    
 });

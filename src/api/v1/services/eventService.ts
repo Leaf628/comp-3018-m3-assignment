@@ -1,8 +1,7 @@
 import { date } from "joi";
 import { Event } from "../models/eventModel";
 import * as firestoreRepository from "../repositories/firestoreRepository";
-// import { eventSchemas } from "../validation/eventSchemas";
-// import { validateRequest } from "../middleware/validate";
+import  { ValidationError, NotFoundError } from "../errors/AppError";
 
 const COLLECTION = "events";
 
@@ -25,7 +24,7 @@ const validateEventRules = (eventData: Partial<Event>): void => {
     // Validate event capacity
     if (eventData.capacity !== undefined) {
         
-        if (!Number.isInteger(eventData.capacity)){
+        if (!Number.isInteger(eventData.capacity)) {
             errors.push("Validation error: \"capacity\" must be an integer")
         } else if(eventData.capacity < 5 ){
             errors.push("Validation error: \"capacity\" must be greater than or equal to 5.");
@@ -35,14 +34,14 @@ const validateEventRules = (eventData: Partial<Event>): void => {
     // Validate Enum of Status and Category
     if(eventData.status) {
         const validStatuses = ["active", "cancelled", "completed"];
-        if (!validStatuses.includes(eventData.status)){
+        if (!validStatuses.includes(eventData.status)) {
             errors.push("Validation error: \"status\" must be one of [active, cancelled, completed]")
         }
     };    
 
     if(eventData.category) {
         const validCategories = ["conference", "workshop", "meetup", "seminar", "general"];
-        if (!validCategories.includes(eventData.category)){
+        if (!validCategories.includes(eventData.category)) {
             errors.push("Validation error: \"category\" must be one of [conference, workshop, meetup, seminar, general]")
         }
     };
@@ -111,6 +110,11 @@ export const createEvent = async (eventData: {
         return newEventData;
        
     } catch (error: unknown) {
+        // Throw error defined
+        if (error instanceof ValidationError) {
+            throw error;
+        }
+        
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error";
         throw new Error(
@@ -120,11 +124,14 @@ export const createEvent = async (eventData: {
 };
 
 // retrieving all events
-export const getAllEvents = async (): Promise<Event[]> => {
+export const getAllEvents = async (): Promise<{count: number; events: Event[]}> => {
     try {
         const events = await firestoreRepository.getAllDocuments<Event>(COLLECTION);
-        return events;
-
+        return {
+            count: events.length,
+            events: events
+        };
+        
     } catch (error: unknown) {
         const errorMessage = 
             error instanceof Error ? error.message : "Unknown error";
