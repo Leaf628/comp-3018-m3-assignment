@@ -60,7 +60,7 @@ describe("Event Services", () => {
     });
 
 
-    // test case # 2
+    // test case # 2 - getAllEvents
     describe("Event Service - GetAllEvents", () => {
 
         it("should retrieve the list of events successfully", async () => {
@@ -97,6 +97,22 @@ describe("Event Services", () => {
             });
         });
 
-    // test case # 3
-    
+    // test case # 3 - getEventById
+    describe("getEventById", () => {
+        it("should return event by id", async () => {
+            const mockEvent = {
+                id: "evt_001",
+                name: "Test Event"
+            };
+
+            (firestoreRepository.getDocById as jest.Mock).mockResolvedValue(mockEvent);
+
+            const result = await eventService.getEventById("evt_001");
+        
+            expect(firestoreRepository.getDocById).toHaveBeenCalledWith("events", "evt_001");
+        
+            expect(result).toEqual(mockEvent);
+        });
+    });
+
 });
