@@ -16,7 +16,7 @@ const validateEventRules = (eventData: Partial<Event>): void => {
 
         if (trimmedName.length === 0) {
             errors.push("Validation error: \"name\" is required.");
-        } else if (trimmedName.length < 3) {
+        } else if (trimmedName.length < 5) {
             errors.push("Validation error: \"name\" length must be at least 3 chatacters long.");
         } 
     };
@@ -26,8 +26,8 @@ const validateEventRules = (eventData: Partial<Event>): void => {
         
         if (!Number.isInteger(eventData.capacity)) {
             errors.push("Validation error: \"capacity\" must be an integer")
-        } else if(eventData.capacity < 5 ){
-            errors.push("Validation error: \"capacity\" must be greater than or equal to 5.");
+        } else if(eventData.capacity < 3 ){
+            errors.push("Validation error: \"capacity\" must be greater than or equal to 3.");
         }     
     };
 
@@ -70,7 +70,7 @@ const validateEventRules = (eventData: Partial<Event>): void => {
 
     // Display error message
     if (errors.length > 0) {
-        throw new Error(errors.join(","))
+        throw new ValidationError(errors.join(","))
     }
 };
 
@@ -111,7 +111,7 @@ export const createEvent = async (eventData: {
        
     } catch (error: unknown) {
         // Throw error defined
-        if (error instanceof ValidationError) {
+        if ((error as any ).statusCode) {
             throw error;
         }
         
@@ -164,31 +164,23 @@ export const getEventById = async (id: string): Promise<Event> => {
 // Updating an event
 export const updateEvent = async (id: string, eventData: {name: string, date: Date, capacity: number}): Promise<Event> => {
     try {
-        const updatedEvent: Partial<Event> = {};
+        // Get an existing event
+        const existingEvent = await getEventById(id);
 
-        if (eventData.name !== undefined) {
-            updatedEvent.name = eventData.name; 
+        // Combine the data
+        const updatedData = {
+            ...existingEvent,
+            ...eventData,
+            updatedAt: new Date(),
         }
 
-        if (eventData.date !== undefined) {
-            updatedEvent.date = eventData.date;
-        }
-
-        if (eventData.capacity !== undefined) {
-            updatedEvent.capacity = eventData.capacity;
-        }
-
-        if (Object.keys(updatedEvent).length === 0) {
-            throw new Error("No fields provided to update");
-        }
-
-        updatedEvent.updatedAt = new Date();
-
+        // validate the data of updating
+        validateEventRules(updatedData)
         // update the document
         await firestoreRepository.updateDocument<Event>(
             COLLECTION,
             id,
-            updatedEvent
+            updatedData
         );
 
         // retrieve the updated event document
