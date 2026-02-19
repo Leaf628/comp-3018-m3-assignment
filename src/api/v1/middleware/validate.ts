@@ -108,7 +108,7 @@ export const validateRequest = (
             // If there are any validation errors, return them
             if (errors.length > 0) {
                 return res.status(HTTP_STATUS.BAD_REQUEST).json({
-                    error: `Validation error: ${errors.join(", ")}`,
+                    error: `validation error: ${errors.join(", ")}`,
                 });
             }
 
