@@ -70,7 +70,7 @@ export const getDocById = async <T>(
     
         const snapshot = await docRef.get();
 
-        if(!snapshot){
+        if(!snapshot.exists){
             return null;
         }
 
@@ -81,6 +81,7 @@ export const getDocById = async <T>(
     }catch (error: unknown) {
         const errorMessage = 
             error instanceof Error ? error.message : "Unknown error";
+            
         throw new Error(
             `Failed to find the document in ${collectionName}: ${errorMessage}`
         );

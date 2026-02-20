@@ -26,8 +26,8 @@ const validateEventRules = (eventData: Partial<Event>): void => {
         
         if (!Number.isInteger(eventData.capacity)) {
             errors.push("Validation error: \"capacity\" must be an integer")
-        } else if(eventData.capacity < 3 ){
-            errors.push("Validation error: \"capacity\" must be greater than or equal to 3.");
+        } else if(eventData.capacity < 5 ){
+            errors.push("Validation error: \"capacity\" must be greater than or equal to 5.");
         }     
     };
 
@@ -143,23 +143,14 @@ export const getAllEvents = async (): Promise<{count: number; events: Event[]}> 
 
 // Retrives an event by ID
 export const getEventById = async (id: string): Promise<Event> => {
-    try {
-        const event = await firestoreRepository.getDocById<Event>(COLLECTION, id);
-    
-        if(!event){
-            throw new Error("Event not found");
-        }
+    const event = await firestoreRepository.getDocById<Event>(COLLECTION, id);
 
-        return event;
-
-    } catch (error: unknown) {
-        const errorMessage = 
-            error instanceof Error ? error.message : " Unknown error";
-        throw new Error(
-                `Failed to retrive the event: ${errorMessage}` 
-        );
+    if(!event) {
+        throw new NotFoundError(`Event with id ${id} not found`);
     }
-};
+    
+    return event;
+}
 
 // Updating an event
 export const updateEvent = async (id: string, eventData: {name: string, date: Date, capacity: number}): Promise<Event> => {
@@ -176,6 +167,7 @@ export const updateEvent = async (id: string, eventData: {name: string, date: Da
 
         // validate the data of updating
         validateEventRules(updatedData)
+
         // update the document
         await firestoreRepository.updateDocument<Event>(
             COLLECTION,
@@ -193,24 +185,17 @@ export const updateEvent = async (id: string, eventData: {name: string, date: Da
         return updatedEventData;
 
     } catch (error: unknown) {
-        const errorMessage = 
-            error instanceof Error ? error.message : "Unknown error";
-        throw new Error(
-            `Failed to update event ${id}: ${errorMessage} `
-        );
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error("Unknown error occured while updateing event");
     }
 };
 
 // deleting an event by ID
 export const deleteEvent = async (id: string): Promise<void> => {
-    try {
-        await firestoreRepository.deleteDocument(COLLECTION, id);
-        
-    } catch (error: unknown) {
-        const errorMessage = 
-            error instanceof Error ? error.message : "Unknown error";
-        throw new Error(
-            `Failed to delete the event: ${errorMessage}`
-        );
-    }
+   
+    await getEventById(id);
+
+    await firestoreRepository.deleteDocument(COLLECTION, id);
 };
